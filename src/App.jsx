@@ -1,121 +1,113 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState } from 'react'
+import axios from 'axios';
+import './App.scss'
+import Table from './components/TableComponents/Table/Table.jsx';
+import AddForm from './components/FormComponents/AddForm/AddForm.jsx';
+import EditForm from './components/FormComponents/EditForm/EditForm.jsx';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = props => {
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+  //create a state variable to hold some data
+  const [entries, setEntries] = useState([]);
+  const [editing, setEditing] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState({})
 
-      <div className="ticks"></div>
+  useEffect(()=>{
+    console.log(`App component has loaded`)
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+    //retrieve a list of all items from the server
+    //use axios to retrieve (npm install axios)
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    const url = "http://127.0.0.1:3001/entries"
+    axios.get(url)
+         .then( response => {
+            console.log(response) //{"entries":[]}
+            //response.data.entries <= array of values retrieved
+            //can't do entries = response.data.entries
+            setEntries(response.data.entries)
+
+         })
+         .catch( error => {
+            console.log(error);
+        })
+
+
+  },[])
+
+  const _addEntry = entry => {
+
+    //instead of directly adding the entry to the array,
+    //send to node via axios
+    //returns an array of all current entries to display
+
+    //setEntries( [ ...entries, entry] )
+    //send the entry to the server via axios
+    const url = "http://127.0.0.1:3001/entries"
+    axios.post(url, { 
+      item : entry
+    })
+    .then( response => {
+      setEntries(response.data.entries)
+    })
+    .catch( error => {
+          console.log(error);
+      })
+
+  }
+
+  const _editEntry = entry => {
+    //setEntries( [ ...entries, entry] )
+    console.log(`_editEntry fired`)
+    console.log(entry)
+
+    //show the edit component
+    setEditing(true)
+    setSelectedEntry(entry)
+  }
+
+  const _updateEntry = entry => {
+    console.log(`_updateEntry fired`)
+   console.log(entry)
+
+    const url = `http://127.0.0.1:3001/entries/${entry.id}`
+    axios.patch(url, {
+      item: entry
+    }).then( response => {
+      setEntries(response.data.entries)
+      setEditing(false)
+      setSelectedEntry({})
+    }).catch( error => {
+        console.log(error);
+    })
+
+  }
+
+  const _deleteEntry = entry => {
+    console.log(`_deleteEntry fired`)
+    console.log(entry)
+
+    const url = `http://127.0.0.1:3001/entries/${entry.id}`
+    axios.delete(url).then( response => {
+      setEntries(response.data.entries)
+    }).catch( error => {
+        console.log(error);
+    })
+  }
+
+  return(
+    <div className='App'>
+      {
+        editing ? (
+          <EditForm onUpdateEntry={ _updateEntry } entry={ selectedEntry } />
+        ) : (
+          <AddForm onAddEntry={ _addEntry } />
+        )
+      }
+      
+      <Table entries={entries} onEditEntry={ _editEntry } onDeleteEntry={ _deleteEntry } />
+    </div>
   )
+
 }
 
-export default App
+export default App;
