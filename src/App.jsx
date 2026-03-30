@@ -7,24 +7,21 @@ import EditForm from './components/FormComponents/EditForm/EditForm.jsx';
 
 const App = props => {
 
-  //create a state variable to hold some data
-  const [entries, setEntries] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [editing, setEditing] = useState(false);
-  const [selectedEntry, setSelectedEntry] = useState({})
+  const [selectedCategory, setSelectedCategory] = useState({})
 
   useEffect(()=>{
     console.log(`App component has loaded`)
 
-    //retrieve a list of all items from the server
-    //use axios to retrieve (npm install axios)
 
-    const url = "http://127.0.0.1:3001/entries"
+
+    const url = "http://127.0.0.1:3001/categories"
     axios.get(url)
          .then( response => {
-            console.log(response) //{"entries":[]}
-            //response.data.entries <= array of values retrieved
-            //can't do entries = response.data.entries
-            setEntries(response.data.entries)
+            console.log(response) 
+
+            setCategories(response.data.categories)
 
          })
          .catch( error => {
@@ -34,20 +31,14 @@ const App = props => {
 
   },[])
 
-  const _addEntry = entry => {
+  const _addCategory = category => {
 
-    //instead of directly adding the entry to the array,
-    //send to node via axios
-    //returns an array of all current entries to display
-
-    //setEntries( [ ...entries, entry] )
-    //send the entry to the server via axios
-    const url = "http://127.0.0.1:3001/entries"
+    const url = "http://127.0.0.1:3001/categories"
     axios.post(url, { 
-      item : entry
+      item : category
     })
     .then( response => {
-      setEntries(response.data.entries)
+      setCategories(response.data.categories)
     })
     .catch( error => {
           console.log(error);
@@ -55,40 +46,39 @@ const App = props => {
 
   }
 
-  const _editEntry = entry => {
-    //setEntries( [ ...entries, entry] )
-    console.log(`_editEntry fired`)
-    console.log(entry)
+  const _editCategory = category => {
+   
+    console.log(`_editcategory fired`)
+    console.log(category)
 
-    //show the edit component
     setEditing(true)
-    setSelectedEntry(entry)
+    setSelectedCategory(category)
   }
 
-  const _updateEntry = entry => {
-    console.log(`_updateEntry fired`)
-   console.log(entry)
+  const _updateCategory = category => {
+    console.log(`_updateCategory fired`)
+   console.log(category)
 
-    const url = `http://127.0.0.1:3001/entries/${entry.id}`
+    const url = `http://127.0.0.1:3001/categories/${category.category_id}`
     axios.patch(url, {
-      item: entry
+      item: category
     }).then( response => {
-      setEntries(response.data.entries)
+      setCategories(response.data.categories)
       setEditing(false)
-      setSelectedEntry({})
+      setSelectedCategory({})
     }).catch( error => {
         console.log(error);
     })
 
   }
 
-  const _deleteEntry = entry => {
-    console.log(`_deleteEntry fired`)
-    console.log(entry)
+  const _deleteCategory = category => {
+    console.log(`_deleteCategory fired`)
+    console.log(category)
 
-    const url = `http://127.0.0.1:3001/entries/${entry.id}`
+    const url = `http://127.0.0.1:3001/categories/${category.category_id}`
     axios.delete(url).then( response => {
-      setEntries(response.data.entries)
+      setCategories(response.data.categories)
     }).catch( error => {
         console.log(error);
     })
@@ -98,13 +88,13 @@ const App = props => {
     <div className='App'>
       {
         editing ? (
-          <EditForm onUpdateEntry={ _updateEntry } entry={ selectedEntry } />
+          <EditForm onUpdateCategory={ _updateCategory } category={ selectedCategory } />
         ) : (
-          <AddForm onAddEntry={ _addEntry } />
+          <AddForm onAddCategory={ _addCategory } />
         )
       }
       
-      <Table entries={entries} onEditEntry={ _editEntry } onDeleteEntry={ _deleteEntry } />
+      <Table categories={categories} onEditCategory={ _editCategory } onDeleteCategory={ _deleteCategory } />
     </div>
   )
 

@@ -1,12 +1,12 @@
 const express = require('express')
-const EntryController = require('./controllers/EntryController.cjs')
+const CategoryController = require('./controllers/CategoryController.cjs')
 
 const router = express.Router()
 
 //web routes here
-router.get('/entries', EntryController.index)
-router.post('/entries', EntryController.store)
-router.patch('/entries/:entry', EntryController.update)
-router.delete('/entries/:entry', EntryController.destroy)
+router.get('/categories', CategoryController.index)
+router.post('/categories', CategoryController.store)
+router.patch('/categories/:category', CategoryController.update)
+router.delete('/categories/:category', CategoryController.destroy)
 
 module.exports = router

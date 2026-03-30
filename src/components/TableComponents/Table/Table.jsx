@@ -4,11 +4,11 @@ import TableRow from "../TableRow/TableRow.jsx"
 const Table = props => {
 
     const _editEntry = entry => {
-        props.onEditEntry(entry)
+        props.onEditCategory(entry)
     }
 
     const _deleteEntry = entry => {
-        props.onDeleteEntry(entry)
+        props.onDeleteCategory(entry)
     }
 
     return(
@@ -17,15 +17,13 @@ const Table = props => {
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Value 1</th>
-                        <th>Value 2</th>
-                        <th>Value 3</th>
+                        <th>Category Name</th>
                         <th colSpan={2}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    { props.entries.map(
-                        (entry, i) => { return( <TableRow key={i} index={i} entry={entry} onEditEntry={_editEntry} onDeleteEntry={_deleteEntry} /> ) }
+                    { props.categories.map(
+                        (entry, i) => { return( <TableRow key={i} index={i} entry={entry} onEditCategory={_editEntry} onDeleteCategory={_deleteEntry} /> ) }
                     )}
                 </tbody>
             </table> 
