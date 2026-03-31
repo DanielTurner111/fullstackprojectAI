@@ -4,11 +4,11 @@ import './TableRow.scss'
 const TableRowItem = props => {
 
    const _editRowEntry = () => {
-        props.onEditCategory(props.entry)
+        props.onEditItems(props.entry)
     }
 
     const _deleteRowEntry = () => {
-        props.onDeleteCategory(props.entry)
+        props.onDeleteItems(props.entry)
     } 
 
     return(

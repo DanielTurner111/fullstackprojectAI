@@ -13,7 +13,9 @@ const App = props => {
   const [categories, setCategories] = useState([]);
   const [editing, setEditing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({})
-  const [items, setItems] = useState(false);
+  const [items, setItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState({})
+  const [editingItem, setEditingItem] = useState(false);
 
   useEffect(()=>{
     console.log(`App component has loaded`)
@@ -26,7 +28,7 @@ const App = props => {
             console.log(response) 
 
             setCategories(response.data.categories)
-
+            
          })
          .catch( error => {
             console.log(error);
@@ -88,17 +90,107 @@ const App = props => {
     })
   }
 
+   useEffect(()=>{
+    console.log(`App component has loaded`)
+
+
+
+    const url = "http://127.0.0.1:3001/items"
+    axios.get(url)
+         .then( response => {
+            console.log(response) 
+
+            setItems(response.data.items)
+            
+
+         })
+         .catch( error => {
+            console.log(error);
+        })
+
+
+  },[])
+
+  const _addItem = item => {
+
+    const url = "http://127.0.0.1:3001/items"
+    axios.post(url, { 
+      item : item
+    })
+    .then( response => {
+      setItems(response.data.items)
+    })
+    .catch( error => {
+          console.log(error);
+      })
+
+  }
+
+  const _editItem = item => {
+   
+    console.log(`_editItem fired`)
+    console.log(item)
+
+    setEditingItem(true)
+    setSelectedItem(item)
+  }
+
+  const _updateItem = item => {
+    console.log(`_updateItem fired`)
+   console.log(item)
+
+    const url = `http://127.0.0.1:3001/items/${item.id}`
+    axios.patch(url, {
+      item: item
+    }).then( response => {
+      setItems(response.data.items)
+      setEditingItem(false)
+      setSelectedItem({})
+    }).catch( error => {
+        console.log(error);
+    })
+
+  }
+
+  const _deleteItem = item => {
+    console.log(`_deleteCategory fired`)
+    console.log(item)
+
+    const url = `http://127.0.0.1:3001/items/${item.id}`
+    axios.delete(url).then( response => {
+      setItems(response.data.items)
+    }).catch( error => {
+        console.log(error);
+    })
+  }
+
   return(
     <div className='App'>
       {
         editing ? (
           <EditForm onUpdateCategory={ _updateCategory } category={ selectedCategory } />
-        ) : (
+        ) :  
+        (
+        
           <AddForm onAddCategory={ _addCategory } />
+        
+        )
+      }
+
+      <Table categories={categories} onEditCategory={ _editCategory } onDeleteCategory={ _deleteCategory } />
+
+      {
+        editingItem? (
+          <EditItemForm onUpdateItem={_updateItem} item={selectedItem}/>
+        ) : (
+          
+          <AddItemForm onAddItem={_addItem}/>
+          
+          
         )
       }
       
-      <Table categories={categories} onEditCategory={ _editCategory } onDeleteCategory={ _deleteCategory } />
+      
     </div>
   )
 

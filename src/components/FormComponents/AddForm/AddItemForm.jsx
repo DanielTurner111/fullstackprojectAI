@@ -12,6 +12,7 @@ const AddItemForm = props => {
     const [quantity, setQuantity] = useState('')
     const [sku, setSku] = useState('')
 
+    const [buttonState, setButtonState] = useState(false)
 
     const [entry, setEntry] = useState(false)
 
@@ -51,9 +52,9 @@ const AddItemForm = props => {
         }else if (key === 'price'){
             setPrice(value)
         }else if (key === 'quantity'){
-            setDesc(value)
-        }else if (key === 'key'){
-            setDesc(value)
+            setQuantity(value)
+        }else if (key === 'sku'){
+            setSku(value)
         }
         console.log('_detectValueChanged triggered')
     }
@@ -72,7 +73,7 @@ const AddItemForm = props => {
             <br/>
              <label>Description</label>
             <input type='text' placeholder='Description' value={description}
-                   onChange = { e => _detectValueChanged('title', e.target.value) } />
+                   onChange = { e => _detectValueChanged('description', e.target.value) } />
             <br/>
             <label>Price</label>
             <input type='text' placeholder='Price' value={price}

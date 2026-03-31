@@ -3,11 +3,11 @@ import './TableItem.scss'
 
 const TableItem = props => {
      const _editEntry = entry => {
-        props.onEditItem(entry)
+        props.onEditItems(entry)
     }
 
     const _deleteEntry = entry => {
-        props.onDeleteItem(entry)
+        props.onDeleteItems(entry)
     }
 
     return(
@@ -20,9 +20,9 @@ const TableItem = props => {
                         <th colSpan={2}>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    { props.items.map(
-                        (entry, i) => { return( <TableRowItem key={i} index={i} entry={entry} onEditItem={_editEntry} onDeleteItem={_deleteEntry} /> ) }
+                <tbody> 
+                    {props.items.map(
+                        (entry, i) => { return( <TableRowItem key={i} index={i} entry={entry} onEditItems={_editEntry} onDeleteItems={_deleteEntry} /> ) }
                     )}
                 </tbody>
             </table> 
