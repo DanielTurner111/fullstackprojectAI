@@ -5,7 +5,7 @@ module.exports = {
         const sql = `SELECT * FROM items`
         conn.query(sql, (error, results) => {
             if (error) return response.sendStatus(500)
-            return response.send( { categories: results })
+            return response.send( { items: results })
         })       
     }, store(request, response) {
         const sql = `INSERT INTO items (category_id, title, description, price, quantity, sku) VALUES (?, ?, ?, ?, ?, ?)`
@@ -18,7 +18,7 @@ module.exports = {
             const sql = `SELECT * FROM items`
             conn.query(sql, (error, results) => {
                 if (error) return response.sendStatus(500)
-                return response.send( { categories: results })
+                return response.send( { items: results })
             })
         })
     },
@@ -33,7 +33,7 @@ module.exports = {
             const sql = `SELECT * FROM items`
             conn.query(sql, (error, results) => {
                 if (error) return response.sendStatus(500)
-                return response.send( { categories: results })
+                return response.send( { items: results })
             })
         })
     },
@@ -47,7 +47,7 @@ module.exports = {
             const sql = `SELECT * FROM items`
             conn.query(sql, (error, results) => {
                 if (error) return response.sendStatus(500)
-                return response.send( { categories: results })
+                return response.send( { items: results })
             })
         })
     }
