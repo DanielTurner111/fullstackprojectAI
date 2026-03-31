@@ -4,12 +4,16 @@ import './App.scss'
 import Table from './components/TableComponents/Table/Table.jsx';
 import AddForm from './components/FormComponents/AddForm/AddForm.jsx';
 import EditForm from './components/FormComponents/EditForm/EditForm.jsx';
+import AddItemForm from './components/FormComponents/AddForm/AddItemForm.jsx';
+import EditItemForm from './components/FormComponents/EditForm/EditItemForm.jsx';
+import TableItem from './components/TableComponents/Table/TableItem.jsx';
 
 const App = props => {
 
   const [categories, setCategories] = useState([]);
   const [editing, setEditing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState({})
+  const [items, setItems] = useState(false);
 
   useEffect(()=>{
     console.log(`App component has loaded`)
