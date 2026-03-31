@@ -189,7 +189,7 @@ const App = props => {
           
         )
       }
-      
+      <TableItem items={items} onEditItems={_editItem} onDeleteItems={_deleteItem}/>
       
     </div>
   )
