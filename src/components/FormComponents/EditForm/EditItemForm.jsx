@@ -11,6 +11,8 @@ const EditItemForm = props => {
         _clear()
     }
 
+    const [categories, setCategories] = useState([])
+
     const [id, setID] = useState('')
     const [category_id, setCategoryID] = useState('')
     const [title, setTitle] = useState('')
@@ -75,13 +77,25 @@ const EditItemForm = props => {
 
     }, [props])
 
+    useEffect(()=>{
+        const loadCategories = async () => {
+            try {
+                
+            } catch (err) {
+                console.log("error")
+            }
+        }
+    })
+
     return(
         <div className='EditItemForm'>
             <Button clickme={ _update } title='Edit Entry' enabled={ buttonState }/>
             <br/>
             <label>Category ID:</label>
-            <input type='text' placeholder='Category_id' value={category_id}
-                   onChange = { e => _detectValueChanged('category_id', e.target.value) } />
+            <select value={category_id}
+                   onChange = { e => _detectValueChanged('category_id', e.target.value) }>
+                    <option>Select Category</option>
+                   </select>
             <br/>
             <label>Title</label>
             <input type='text' placeholder='Title' value={title}

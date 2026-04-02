@@ -5,6 +5,9 @@ import { useState, useEffect, use } from 'react'
 
 const AddItemForm = props => {
 
+    const [categories, setCategories] = useState([])
+
+
     const [category_id, setCategoryID] = useState('')
     const [title, setTitle] = useState('')
     const [description, setDesc] = useState('')
@@ -59,13 +62,29 @@ const AddItemForm = props => {
         console.log('_detectValueChanged triggered')
     }
 
+        useEffect(()=>{
+        const loadCategories = async () => {
+            try {
+               const res ="http://127.0.0.1:3001/categories"
+               
+
+
+
+            } catch (err) {
+                console.log("error")
+            }
+        }
+    })
+
     return(
         <div className='ItemForm'>
             <Button clickme={ _add } title='Add Entry' enabled={ buttonState }/>
             <br/>
             <label>Category ID:</label>
-            <input type='text' placeholder='Category_id' value={category_id}
-                   onChange = { e => _detectValueChanged('category_id', e.target.value) } />
+            <select value={category_id}
+                   onChange = { e => _detectValueChanged('category_id', e.target.value) }>
+                    <option>Select Category</option>
+                   </select>
             <br/>
             <label>Title</label>
             <input type='text' placeholder='Title' value={title}
