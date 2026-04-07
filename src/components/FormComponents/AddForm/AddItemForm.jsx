@@ -37,7 +37,7 @@ const AddItemForm = props => {
         console.log('entry changed')
         console.log(`entry: ${JSON.stringify(entry)}`)
 
-        setButtonState( (entry.category_id === '', entry.title === '', entry.description === '', entry.price === '', entry.quantity === '', entry.sku === '') ? false : true ) 
+        setButtonState( (entry.category_id === '' || entry.title === ''|| entry.description === ''|| entry.price === ''|| entry.quantity === ''|| entry.sku === '') ? false : true ) 
 
     },[entry])
 
@@ -65,16 +65,18 @@ const AddItemForm = props => {
         useEffect(()=>{
         const loadCategories = async () => {
             try {
-               const res ="http://127.0.0.1:3001/categories"
-               
-
+               const res = await fetch("http://127.0.0.1:3001/categories")
+               const json = await res.json();
+               console.log(json);
+               setCategories(json.categories)
 
 
             } catch (err) {
                 console.log("error")
             }
         }
-    })
+        loadCategories();
+    }, [])
 
     return(
         <div className='ItemForm'>
@@ -83,7 +85,11 @@ const AddItemForm = props => {
             <label>Category ID:</label>
             <select value={category_id}
                    onChange = { e => _detectValueChanged('category_id', e.target.value) }>
-                    <option>Select Category</option>
+                    <option value="">Select Category</option>
+                    {categories.map((category)=>(
+                        <option key={category.category_id} value={category.category_id} >{category.categoryName}</option>
+                    ))}
+
                    </select>
             <br/>
             <label>Title</label>

@@ -182,3 +182,30 @@
     border-right-color: var(--border);
   }
 }
+
+.header {
+  width: 100%;
+  background-color: rgb(61, 119, 113);
+  height: 130;
+  margin-bottom: 15px;
+}
+
+.buttonHeader {
+  width: 30%;
+  margin-right: 5px;
+  margin-left: 5px;
+  background-color: transparent;
+  color: rgb(139, 226, 226);
+  outline: none;
+  border: none;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.h1{
+  margin-top: 0px;
+  margin-bottom: 5px;
+  color: rgb(139, 226, 226);
+  margin-left: 0px;
+  margin-right: 89%;
+  font-family: 'Courier New', Courier, monospace;
+}
