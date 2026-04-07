@@ -23,7 +23,7 @@ module.exports = {
         })
     },
     update(request, response){
-        const sql = `UPDATE items SET category_id=?, title=?,   WHERE id=?`
+        const sql = `UPDATE items SET category_id=?, title=?   WHERE id=?`
         const values = [request.body.item.category_id, request.body.item.title, request.body.item.id]
         conn.query(sql, values, (error, results) => {
             console.log(`results: ${ JSON.stringify(results) }`)

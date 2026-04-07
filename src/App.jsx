@@ -35,12 +35,14 @@ const App = props => {
   return(
     <div className='App'>
 
+      <div className='header-div'>
       <header className='header'>
       <h1 className='h1'>Store</h1>
       <button className='buttonHeader' onClick={store}>Store</button>
       <button className='buttonHeader' onClick={categories}>Categories</button>
       <button className='buttonHeader' onClick={items}>Items</button>
       </header>
+      </div>
 
       {
         modeStore? (

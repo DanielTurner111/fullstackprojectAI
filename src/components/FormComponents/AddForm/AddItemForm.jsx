@@ -74,9 +74,9 @@ const AddItemForm = props => {
             } catch (err) {
                 console.log("error")
             }
-        }
-        loadCategories();
-    }, [])
+            }
+            loadCategories();
+        }, [])
 
     return(
         <div className='ItemForm'>

@@ -39,7 +39,7 @@ const EditItemForm = props => {
         console.log(`category: ${JSON.stringify(entry)}`)
 
 
-        setButtonState( (entry.category_id === '' || entry.title === '' || entry.description === '' || entry.price === '' || entry.quantity === '' || entry.sku === '') ? false : true ) 
+        setButtonState( (entry.category_id === 0 || entry.title === '' || entry.description === '' || entry.price === '' || entry.quantity === 0 || entry.sku === '') ? false : true ) 
 
     },[entry])
 
@@ -57,9 +57,9 @@ const EditItemForm = props => {
         }else if (key === 'price'){
             setPrice(value)
         }else if (key === 'quantity'){
-            setDesc(value)
-        }else if (key === 'key'){
-            setDesc(value)
+            setQuantity(value)
+        }else if (key === 'sku'){
+            setSku(value)
         }
         console.log('_detectValueChanged triggered')
     }
@@ -77,15 +77,21 @@ const EditItemForm = props => {
 
     }, [props])
 
-    useEffect(()=>{
+   useEffect(()=>{
         const loadCategories = async () => {
             try {
-                
+               const res = await fetch("http://127.0.0.1:3001/categories")
+               const json = await res.json();
+               console.log(json);
+               setCategories(json.categories)
+
+
             } catch (err) {
                 console.log("error")
             }
-        }
-    })
+            }
+            loadCategories();
+        }, [])
 
     return(
         <div className='EditItemForm'>
@@ -94,7 +100,11 @@ const EditItemForm = props => {
             <label>Category ID:</label>
             <select value={category_id}
                    onChange = { e => _detectValueChanged('category_id', e.target.value) }>
-                    <option>Select Category</option>
+                    <option value="">Select Category</option>
+                    {categories.map((category)=>(
+                        <option key={category.category_id} value={category.category_id} >{category.categoryName}</option>
+                    ))}
+
                    </select>
             <br/>
             <label>Title</label>
@@ -103,7 +113,7 @@ const EditItemForm = props => {
             <br/>
              <label>Description</label>
             <input type='text' placeholder='Description' value={description}
-                   onChange = { e => _detectValueChanged('title', e.target.value) } />
+                   onChange = { e => _detectValueChanged('description', e.target.value) } />
             <br/>
             <label>Price</label>
             <input type='text' placeholder='Price' value={price}
