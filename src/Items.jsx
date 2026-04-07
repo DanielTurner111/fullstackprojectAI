@@ -35,19 +35,28 @@ const Items = props => {
   },[])
 
   const _addItem = item => {
+    const formData = new FormData()
+    formData.append('category_id', item.category_id)
+    formData.append('title', item.title)
+    formData.append('description', item.description)
+    formData.append('price', item.price)
+    formData.append('quantity', item.quantity)
+    formData.append('sku', item.sku)
+    if (item.imageFile) formData.append('image', item.imageFile) // make sure the key matches multer
 
     const url = "http://127.0.0.1:3001/items"
-    axios.post(url, { 
-      item : item
+    axios.post(url, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
     })
-    .then( response => {
-      setItems(response.data.items)
+    .then(response => {
+        setItems(response.data.items)
     })
-    .catch( error => {
-          console.log(error);
-      })
-
-  }
+    .catch(error => {
+        console.log(error.response?.data || error)
+    })
+}
 
   const _editItem = item => {
    
@@ -58,23 +67,21 @@ const Items = props => {
     setSelectedItem(item)
   }
 
-  const _updateItem = item => {
-    console.log(`_updateItem fired`)
-   console.log(item)
+  const _updateItem = (formData) => {
+  
+    const id = formData.get('id'); 
+    const url = `http://127.0.0.1:3001/items/${id}`;
 
-    const url = `http://127.0.0.1:3001/items/${item.id}`
-    axios.patch(url, {
-      item: item
-    }).then( response => {
-      setItems(response.data.items)
-      setEditingItem(false)
-      setSelectedItem({})
-    }).catch( error => {
-        console.log(error);
-    })
-
-  }
-
+    axios.patch(url, formData)
+        .then(response => {
+            setItems(response.data.items);
+            setEditingItem(false);
+            setSelectedItem({});
+        })
+        .catch(error => {
+            console.log("Update error:", error);
+        });
+};
   const _deleteItem = item => {
     console.log(`_deleteCategory fired`)
     console.log(item)

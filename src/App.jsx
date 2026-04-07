@@ -12,6 +12,22 @@ const App = props => {
   const [modeCategories, setModeCategories] = useState(false)
   const [modeItems, setModeItems] = useState(false)
 
+  const headerImages = [
+  '/images/banner.png',
+  '/images/banner2.jpg',
+  '/images/banner3.jpg'
+]
+
+const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCurrentImageIndex(prevIndex => (prevIndex + 1) % headerImages.length)
+  }, 3000)
+
+  return () => clearInterval(interval)
+}, [])
+
   
   const store = () => {
     setModeStore(true)
@@ -34,14 +50,17 @@ const App = props => {
 
   return(
     <div className='App'>
-
-      <div className='header-div'>
-      <header className='header'>
-      <h1 className='h1'>Store</h1>
-      <button className='buttonHeader' onClick={store}>Store</button>
-      <button className='buttonHeader' onClick={categories}>Categories</button>
-      <button className='buttonHeader' onClick={items}>Items</button>
-      </header>
+      
+     <div 
+        className='header-div'
+        style={{ backgroundImage: `url(${headerImages[currentImageIndex]})` }}
+      >
+        <header className='header'>
+          <h1 className='h1'>Store</h1>
+          <button className='buttonHeader' onClick={store}>Store</button>
+          <button className='buttonHeader' onClick={categories}>Categories</button>
+          <button className='buttonHeader' onClick={items}>Items</button>
+        </header>
       </div>
 
         

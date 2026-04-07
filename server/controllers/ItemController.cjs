@@ -1,4 +1,6 @@
 const conn = require('../connection.cjs')
+const fs = require('fs');
+const path = require('path');
 
 module.exports = {
     index(request, response) {
@@ -8,48 +10,95 @@ module.exports = {
             return response.send( { items: results })
         })       
     }, store(request, response) {
-        const sql = `INSERT INTO items (category_id, title, description, price, quantity, sku) VALUES (?, ?, ?, ?, ?, ?)`
-        const values = [request.body.item.category_id, request.body.item.title, request.body.item.description, request.body.item.price, request.body.item.quantity, request.body.item.sku]
-        conn.query(sql, values, (error, results) => {
-            console.log(`results: ${ JSON.stringify(results) }`)
-            if (error) return response.sendStatus(500)
+    const image = request.file ? request.file.filename : null;
 
-            
-            const sql = `SELECT * FROM items`
-            conn.query(sql, (error, results) => {
-                if (error) return response.sendStatus(500)
-                return response.send( { items: results })
-            })
-        })
-    },
-    update(request, response){
-        const sql = `UPDATE items SET category_id=?, title=?   WHERE id=?`
-        const values = [request.body.item.category_id, request.body.item.title, request.body.item.id]
-        conn.query(sql, values, (error, results) => {
-            console.log(`results: ${ JSON.stringify(results) }`)
-            if (error) return response.sendStatus(500)
+    const sql = `
+        INSERT INTO items 
+        (category_id, title, description, price, quantity, sku, image) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `
 
-           
-            const sql = `SELECT * FROM items`
-            conn.query(sql, (error, results) => {
-                if (error) return response.sendStatus(500)
-                return response.send( { items: results })
-            })
+    console.log('request.body:', request.body);
+    console.log('request.file:', request.file);
+
+    const values = [
+        request.body.category_id,
+        request.body.title,
+        request.body.description,
+        request.body.price,
+        request.body.quantity,
+        request.body.sku,
+        image
+    ]
+
+    conn.query(sql, values, (error, results) => {
+        if (error) {
+            console.log(error);
+            return response.sendStatus(500)
+        }
+
+        conn.query(`SELECT * FROM items`, (error, results) => {
+            if (error) return response.sendStatus(500)
+            return response.send({ items: results })
         })
+    })
+},
+    update(request, response) {
+    const image = request.file ? request.file.filename : request.body.currentImage;
+
+    const sql = `
+        UPDATE items
+        SET category_id=?, title=?, description=?, price=?, quantity=?, sku=?, image=?
+        WHERE id=?
+    `;
+
+    const values = [
+        request.body.category_id,
+        request.body.title,
+        request.body.description,
+        request.body.price,
+        request.body.quantity,
+        request.body.sku,
+        image,
+        request.params.item
+    ];
+
+    conn.query(sql, values, (error, results) => {
+        if (error) {
+            console.log(error)
+            return response.sendStatus(500)
+        }
+
+        conn.query(`SELECT * FROM items`, (err, results) => {
+            if (err) return response.sendStatus(500)
+            return response.send({ items: results })
+        })
+    });
     },
     destroy(request, response){
-        const sql = `DELETE FROM items WHERE id=?`
-        const values = [request.params.item]
-        conn.query(sql, values, (error, results) => {
-            console.log(`results: ${ JSON.stringify(results) }`)
+    const id = request.params.item;
+
+    conn.query(`SELECT image FROM items WHERE id=?`, [id], (err, results) => {
+        if (err) return response.sendStatus(500)
+
+        const image = results[0]?.image
+
+        if (image) {
+            const filePath = path.join(__dirname, '../uploads', image);
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath)
+            }
+        }
+
+        conn.query(`DELETE FROM items WHERE id=?`, [id], (error) => {
             if (error) return response.sendStatus(500)
 
-            const sql = `SELECT * FROM items`
-            conn.query(sql, (error, results) => {
+            conn.query(`SELECT * FROM items`, (error, results) => {
                 if (error) return response.sendStatus(500)
-                return response.send( { items: results })
+                return response.send({ items: results })
             })
         })
-    }
+    })
+}
 
 }

@@ -2,11 +2,14 @@ const express = require('express')
 const server = express()
 const cors = require('cors') //npm install cors
 const routes = require('./routes.cjs')
+const path = require('path')
 const port = 3001
 
 server.use(cors())
 server.use(express.urlencoded({ extended: false }))
 server.use(express.json())
+
+server.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 server.get("/", (request, response) => { response.send('Hello!') } )
 server.use("/", routes)

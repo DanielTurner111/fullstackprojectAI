@@ -1,15 +1,8 @@
 import './EditItemForm.scss'
-
 import Button from '../Button/Button.jsx'
 import { useState, useEffect } from 'react'
 
 const EditItemForm = props => {
-
-
-    const _update = () => {
-        props.onUpdateItem(entry)
-        _clear()
-    }
 
     const [categories, setCategories] = useState([])
 
@@ -21,8 +14,10 @@ const EditItemForm = props => {
     const [quantity, setQuantity] = useState('')
     const [sku, setSku] = useState('')
 
-    const [entry, setEntry] = useState({})
+    const [imageFile, setImageFile] = useState(null)    
+    const [currentImage, setCurrentImage] = useState('')  
 
+    const [entry, setEntry] = useState({})
     const [buttonState, setButtonState] = useState(false)
 
     const _clear = () => {
@@ -32,40 +27,50 @@ const EditItemForm = props => {
         setPrice('')
         setQuantity('')
         setSku('')
+        setImageFile(null)
     }
 
+    
     useEffect(() => {
-        console.log('category changed')
-        console.log(`category: ${JSON.stringify(entry)}`)
+        setButtonState(
+            category_id !== '' &&
+            title !== '' &&
+            description !== '' &&
+            price !== '' &&
+            quantity !== '' &&
+            sku !== ''
+        )
+    }, [category_id, title, description, price, quantity, sku])
 
-
-        setButtonState( (entry.category_id === 0 || entry.title === '' || entry.description === '' || entry.price === '' || entry.quantity === 0 || entry.sku === '') ? false : true ) 
-
-    },[entry])
-
-    useEffect(() => {
-        setEntry({ 'id': id, 'category_id' : category_id, 'title' : title, 'description' : description, 'price' : price, 'quantity' : quantity, 'sku' : sku})
-    },[id, category_id, title, description, price, quantity, sku])
-
-     const _detectValueChanged = (key, value) => {
-        if (key === 'category_id') {
-            setCategoryID(value)
-        } else if (key === 'title'){
-            setTitle(value)
-        }else if (key === 'description'){
-            setDesc(value)
-        }else if (key === 'price'){
-            setPrice(value)
-        }else if (key === 'quantity'){
-            setQuantity(value)
-        }else if (key === 'sku'){
-            setSku(value)
+    
+    const _detectValueChanged = (key, value) => {
+        switch(key){
+            case 'category_id': setCategoryID(value); break;
+            case 'title': setTitle(value); break;
+            case 'description': setDesc(value); break;
+            case 'price': setPrice(value); break;
+            case 'quantity': setQuantity(value); break;
+            case 'sku': setSku(value); break;
+            default: break;
         }
-        console.log('_detectValueChanged triggered')
     }
 
-    useEffect(() =>{
-        if (props.item){
+   
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const res = await fetch("http://127.0.0.1:3001/categories")
+                const json = await res.json()
+                setCategories(json.categories)
+            } catch (err) {
+                console.log("Error loading categories:", err)
+            }
+        }
+        loadCategories()
+    }, [])
+
+    useEffect(() => {
+        if (props.item) {
             setID(props.item.id)
             setCategoryID(props.item.category_id)
             setTitle(props.item.title)
@@ -73,65 +78,83 @@ const EditItemForm = props => {
             setPrice(props.item.price)
             setQuantity(props.item.quantity)
             setSku(props.item.sku)
+            setCurrentImage(props.item.image || '')  
+            setImageFile(null)                       
         }
+    }, [props.item])
 
-    }, [props])
+    const _update = () => {
+    const formData = new FormData()
+    formData.append('id', id)
+    formData.append('category_id', Number(category_id))
+    formData.append('title', title)
+    formData.append('description', description)
+    formData.append('price', Number(price))
+    formData.append('quantity', Number(quantity))
+    formData.append('sku', sku)
 
-   useEffect(()=>{
-        const loadCategories = async () => {
-            try {
-               const res = await fetch("http://127.0.0.1:3001/categories")
-               const json = await res.json();
-               console.log(json);
-               setCategories(json.categories)
+    if (imageFile) {
+        formData.append('image', imageFile)        
+    } else {
+        formData.append('currentImage', currentImage)
+    }
 
+    props.onUpdateItem(formData) 
+    _clear()
+}
 
-            } catch (err) {
-                console.log("error")
-            }
-            }
-            loadCategories();
-        }, [])
-
-    return(
+    return (
         <div className='EditItemForm'>
             <Button clickme={ _update } title='Edit Entry' enabled={ buttonState }/>
             <br/>
-            <label>Category ID:</label>
-            <select value={category_id}
-                   onChange = { e => _detectValueChanged('category_id', e.target.value) }>
-                    <option value="">Select Category</option>
-                    {categories.map((category)=>(
-                        <option key={category.category_id} value={category.category_id} >{category.categoryName}</option>
-                    ))}
 
-                   </select>
+            <label>Category:</label>
+            <select value={category_id} onChange={ e => _detectValueChanged('category_id', e.target.value) }>
+                <option value="">Select Category</option>
+                {categories.map(category => (
+                    <option key={category.category_id} value={category.category_id}>
+                        {category.categoryName}
+                    </option>
+                ))}
+            </select>
             <br/>
-            <label>Title</label>
+
+            <label>Title:</label>
             <input type='text' placeholder='Title' value={title}
-                   onChange = { e => _detectValueChanged('title', e.target.value) } />
+                   onChange={ e => _detectValueChanged('title', e.target.value) } />
             <br/>
-             <label>Description</label>
+
+            <label>Description:</label>
             <input type='text' placeholder='Description' value={description}
-                   onChange = { e => _detectValueChanged('description', e.target.value) } />
+                   onChange={ e => _detectValueChanged('description', e.target.value) } />
             <br/>
-            <label>Price</label>
+
+            <label>Price:</label>
             <input type='text' placeholder='Price' value={price}
-                   onChange = { e => _detectValueChanged('price', e.target.value) } />
+                   onChange={ e => _detectValueChanged('price', e.target.value) } />
             <br/>
-            <label>Quantity</label>
+
+            <label>Quantity:</label>
             <input type='text' placeholder='Quantity' value={quantity}
-                   onChange = { e => _detectValueChanged('quantity', e.target.value) } />
+                   onChange={ e => _detectValueChanged('quantity', e.target.value) } />
             <br/>
-            <label>Sku</label>
+
+            <label>SKU:</label>
             <input type='text' placeholder='Sku' value={sku}
-                   onChange = { e => _detectValueChanged('sku', e.target.value) } />
+                   onChange={ e => _detectValueChanged('sku', e.target.value) } />
             <br/>
-            
-            
+
+            <label>Image:</label>
+            <input type='file' accept='image/*' onChange={ e => setImageFile(e.target.files[0]) } />
+            {currentImage && !imageFile && (
+                <p>Current Image: {currentImage}</p>
+            )}
+            {imageFile && (
+                <p>New Image: {imageFile.name}</p>
+            )}
+            <br/>
         </div>
     )
-
 }
 
 export default EditItemForm

@@ -1,51 +1,45 @@
 import './ShopItems.scss'
 import { useState, useEffect } from 'react'
 
-
 const ShopItems = props => {
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
 
-    //I want to grab the information about items like I did in the addItemForm to get the category
-
+   
     useEffect(()=>{
         const grabCategories = async () => {
-
             try {
                const res = await fetch("http://127.0.0.1:3001/categories")
                const json = await res.json();
-               console.log(json);
                setCategories(json.categories)
             } catch (err) {
-                console.log("error categories")
-            }
-            
+                console.log("error categories", err)
+            }  
         }
         grabCategories();
     }, [])
 
-    //pull items json merge on category_id
+   
     useEffect(()=>{
-        if (categories.length === 0) {
-            return;
-        }
+        if (categories.length === 0) return;
+
         const grabItems = async () => {
             try {
                 const res = await fetch("http://127.0.0.1:3001/items")
                 const json = await res.json();            
-                console.log(json);
-                
-                const merged = (json.items).map(item => {
+
+                const merged = json.items.map(item => {
                     const matched = categories.find(cat => cat.category_id === item.category_id)
                     return {
-                        item, matched
+                        item,
+                        matched
                     }
                 })
 
                 setItems(merged)
                 
             } catch (err){
-                console.log("error items")
+                console.log("error items", err)
             }
         }
         grabItems();
@@ -53,21 +47,25 @@ const ShopItems = props => {
 
     return (
         <div className='item-shop'>
-            {items.map((item, index)=> (
+            {items.map((entry, index)=> (
                 <div key={index} className='shop-item'>
-                    <h1 className='h1-item'>{item.item.title}</h1>
-                    <p className='item-p'>{item.matched.categoryName}</p>
-                    <p className='item-p'>{item.item.description}</p>
-                    <p className='item-p'>{item.item.price}</p>
-                 
+                    <h1 className='h1-item'>{entry.item.title}</h1>
+                    <p className='item-p'>{entry.matched?.categoryName}</p>
+                    <p className='item-p'>{entry.item.description}</p>
+                    <p className='item-p'>${entry.item.price}</p>
+
+                    {}
+                    {entry.item.image && (
+                        <img 
+                            src={`http://127.0.0.1:3001/uploads/${entry.item.image}`} 
+                            alt={entry.item.title} 
+                            style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                        />
+                    )}
                 </div>
             ))}
         </div>
-        
-
     )
-
-
 }
 
 export default ShopItems;
