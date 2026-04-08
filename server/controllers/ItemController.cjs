@@ -83,6 +83,24 @@ module.exports = {
 
         const image = results[0]?.image
 
+        //delete uploaded image code commented out as two items could be using the same image
+        // if (image) {
+        //     const filePath = path.join(__dirname, '../uploads', image);
+
+        //     try {
+        //         if (fs.existsSync(filePath)) {
+        //             fs.unlinkSync(filePath);
+        //             console.log('Image deleted:', image);
+        //         } else {
+        //             console.log('Image not found on disk:', filePath);
+        //         }
+        //     } catch (err) {
+        //         console.log('Error deleting image:', err);
+        //     }
+        // }
+
+
+
         if (image) {
             const filePath = path.join(__dirname, '../uploads', image);
             if (fs.existsSync(filePath)) {
